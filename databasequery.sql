@@ -114,5 +114,5 @@ VALUES
 INSERT INTO config (config_key, config_value) VALUES ('LateCheckOutHourlyRate', '50.00');
 SELECT config_value FROM Config WHERE config_key = 'LateCheckOutHourlyRate';
 
-SELECT R.id, R.room_number, RT.type_name as room_type FROM room AS R
+SELECT R.id, R.room_number, RT.type_name as room_type, RT.price, RT.capacity, R.occupied FROM room AS R
 INNER JOIN room_type AS RT ON R.room_type_id = RT.Id
