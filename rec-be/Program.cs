@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using rec_be.Data;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,8 +8,9 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 // PostgreSQL
-/*builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));*/
+builder.Services.AddDbContext<RACPostgreSQLDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+           .UseSnakeCaseNamingConvention());
 
 var app = builder.Build();
 

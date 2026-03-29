@@ -122,3 +122,4 @@ C:\Users\JORGE MARTINEZ S\Desktop\UCB\2026-1\Taller de Diseño de Software\Exame
 C:\Users\JORGE MARTINEZ S\Desktop\UCB\2026-1\Taller de Diseño de Software\Examen parcial 1\ResidencialAlCubo_WebEdtion\rec-be\obj\Debug\net10.0\rec-be.pdb
 C:\Users\JORGE MARTINEZ S\Desktop\UCB\2026-1\Taller de Diseño de Software\Examen parcial 1\ResidencialAlCubo_WebEdtion\rec-be\obj\Debug\net10.0\rec-be.genruntimeconfig.cache
 C:\Users\JORGE MARTINEZ S\Desktop\UCB\2026-1\Taller de Diseño de Software\Examen parcial 1\ResidencialAlCubo_WebEdtion\rec-be\obj\Debug\net10.0\ref\rec-be.dll
+C:\Users\JORGE MARTINEZ S\Desktop\UCB\2026-1\Taller de Diseño de Software\Examen parcial 1\ResidencialAlCubo_WebEdtion\rec-be\bin\Debug\net10.0\EFCore.NamingConventions.dll
