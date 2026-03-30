@@ -24,14 +24,5 @@ namespace rec_be.RoomStrategy
         public bool IsOccupied() => room.Occupied;
  
         public decimal GetPrice() => room.RoomType.Price;
-        public decimal CalculateLateCheckOutCharge() =>
-            room.RoomType.Price * lateCheckoutRate;
- 
-        public bool ValidateGuests(List<GuestRequestDTO> guests) =>
-            guests.Count > 0 && guests.Count <= room.RoomType.Capacity;
- 
-        public bool ValidatePayment(decimal amount) =>
-            amount >= room.RoomType.Price;
-        
     }
 }
