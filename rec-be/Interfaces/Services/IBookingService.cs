@@ -12,10 +12,10 @@ namespace rec_be.Interfaces.Services
     public interface IBookingService
     {
         Task<BookingResponseDTO> CreateBooking(BookingRequestDTO bookingRequest);
-        Task<bool> ValidateGuestAmount(List<GuestRequestDTO> Guests);
+        bool ValidateGuestAmount(int amount, IRoomStrategy room);
         Task<BookingResponseDTO> CheckIn(int bookingId);
         Task<BookingResponseDTO> CheckOut(int bookingId);
         Task<BookingResponseDTO> Cancel(int bookingId);
-        Task<bool> ValidateDate(DateOnly StartDate, DateOnly EndDate);
+        bool ValidateDate(DateOnly StartDate, DateOnly EndDate);
     }
 }
