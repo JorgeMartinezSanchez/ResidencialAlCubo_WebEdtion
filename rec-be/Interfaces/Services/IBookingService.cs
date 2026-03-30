@@ -16,5 +16,6 @@ namespace rec_be.Interfaces.Services
         Task<BookingResponseDTO> CheckIn(int bookingId);
         Task<BookingResponseDTO> CheckOut(int bookingId);
         Task<BookingResponseDTO> Cancel(int bookingId);
+        Task<bool> ValidateDate(DateOnly StartDate, DateOnly EndDate);
     }
 }
