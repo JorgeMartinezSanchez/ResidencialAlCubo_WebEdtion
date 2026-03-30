@@ -9,6 +9,5 @@ namespace rec_be.Interfaces.Repository
         Task<List<Booking>> GetAllBookings();
         Task<Booking> GetBooking(int BookingId);
         Task<Booking> ChangeBookingStatus(Booking NewBookingState);
-        Task<LateCheckOut> GetLateCheckOut(int BookingId);
     }
 }
