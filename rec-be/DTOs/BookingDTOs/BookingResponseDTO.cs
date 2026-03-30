@@ -1,18 +1,13 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace rec_be.DTOs.BookingDTOs
 {
-    public class BookingRequestDTO
+    public class BookingResponseDTO
     {
-        [Required]
-        public int RoomId { get; init; }
-        [Required] 
+        public int Id { get; init; }
+        public string RoomNumber { get; init; } = "";
+        public string RoomTypeName { get; init; } = ""; 
         public DateOnly StartDate { get; init; }
-        [Required]
         public DateOnly EndDate { get; init; }
-        [Required]
         public string Status { get; init; } = "";
-        [Required]
         public decimal Total { get; init; }
     }
 }
