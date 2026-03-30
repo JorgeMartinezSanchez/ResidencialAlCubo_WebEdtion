@@ -8,9 +8,10 @@ namespace rec_be.Interfaces.Repository
 {
     public interface IConfigRepository
     {
-        Task CreateConfig(Dictionary<string, string> newConfig);
-        Task<Dictionary<string, string>> GetConfigByKey(string ConfigKey);
-        Task SetNewConfig(string ConfigKey, string ConfigValue);
-        Task DeleteConfig(Dictionary<string, string> SelectedConfig);
+        Task<KeyValuePair<string, string>> CreateConfig(KeyValuePair<string, string> newConfig);
+        Task<KeyValuePair<string, string>> GetConfigByKey(string ConfigKey);
+        Task<Dictionary<string, string>> GetConfigAllConfigs();
+        Task SetNewConfig(string _ConfigKey, string _ConfigValue);
+        Task DeleteConfig(KeyValuePair<string, string> SelectedConfig);
     }
 }

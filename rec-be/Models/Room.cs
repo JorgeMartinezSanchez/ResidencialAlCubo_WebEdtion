@@ -14,6 +14,6 @@ namespace rec_be.Models
 
         // Navegación
         public RoomType RoomType { get; set; } = null!;
-        public ICollection<Booking> RoomReservations { get; set; } = [];
+        public ICollection<Booking> Bookings { get; set; } = [];
     }
 }

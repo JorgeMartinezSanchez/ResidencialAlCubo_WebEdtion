@@ -7,7 +7,7 @@ namespace rec_be.Interfaces.Repository
     {
         Task<Booking> CreateBooking(BookingRequestDTO NewBooking);
         Task<List<Booking>> GetAllBookings();
-        Task<Booking> GetBooking(BookingRequestDTO BookingRequest);
+        Task<Booking> GetBooking(int BookingId);
         Task<Booking> ChangeBookingStatus(BookingRequestDTO NewBookingState);
         Task<LateCheckOut> GetLateCheckOut(int BookingId);
     }

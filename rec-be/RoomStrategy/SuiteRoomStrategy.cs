@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using rec_be.DTOs.GuestDTOs;
+using rec_be.Interfaces.Repository;
 using rec_be.Interfaces.Strategy;
 using rec_be.Models;
 
 namespace rec_be.RoomStrategy
 {
-    public class SimpleRoomStrategy : IRoomStrategy
+    public class SuiteRoomStrategy : IRoomStrategy
     {
         private readonly Room room;
         private readonly decimal lateCheckoutRate;
-        public SimpleRoomStrategy(Room _room, decimal _lateCheckoutRate)
+        public SuiteRoomStrategy(Room _room, decimal _lateCheckoutRate)
         {
             room = _room;
             lateCheckoutRate = _lateCheckoutRate;
@@ -31,5 +32,6 @@ namespace rec_be.RoomStrategy
  
         public bool ValidatePayment(decimal amount) =>
             amount >= room.RoomType.Price;
+        
     }
 }

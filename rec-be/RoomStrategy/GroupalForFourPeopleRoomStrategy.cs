@@ -8,11 +8,11 @@ using rec_be.Models;
 
 namespace rec_be.RoomStrategy
 {
-    public class SimpleRoomStrategy : IRoomStrategy
+    public class GroupalForFourPeopleRoomStrategy : IRoomStrategy
     {
         private readonly Room room;
         private readonly decimal lateCheckoutRate;
-        public SimpleRoomStrategy(Room _room, decimal _lateCheckoutRate)
+        public GroupalForFourPeopleRoomStrategy(Room _room, decimal _lateCheckoutRate)
         {
             room = _room;
             lateCheckoutRate = _lateCheckoutRate;
