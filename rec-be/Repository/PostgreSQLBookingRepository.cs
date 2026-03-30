@@ -17,21 +17,12 @@ namespace rec_be.Repository
         {
             dbContext = _dbContext;
         }
-        public async Task<Booking> CreateBooking(BookingRequestDTO NewBooking)
+        public async Task<Booking> CreateBooking(Booking NewBooking)
         {
-            Booking booking = new Booking
-            {
-                RoomId = NewBooking.RoomId,
-                StartDate = NewBooking.StartDate,
-                EndDate = NewBooking.EndDate,
-                Status = NewBooking.Status,
-                Total = NewBooking.Total
-            };
-
-            await dbContext.Bookings.AddAsync(booking);
+            await dbContext.Bookings.AddAsync(NewBooking);
             await dbContext.SaveChangesAsync();
 
-            return booking;
+            return NewBooking;
         }
         public async Task<List<Booking>> GetAllBookings()
         {
@@ -48,32 +39,11 @@ namespace rec_be.Repository
                 return booking;
             }
         }
-        public async Task<Booking> ChangeBookingStatus(BookingRequestDTO NewBookingState)
+        public async Task<Booking> ChangeBookingStatus(Booking NewBookingState)
         {
-            Booking booking = new Booking
-            {
-                RoomId = NewBookingState.RoomId,
-                StartDate = NewBookingState.StartDate,
-                EndDate = NewBookingState.EndDate,
-                Status = NewBookingState.Status,
-                Total = NewBookingState.Total
-            };
-
-            dbContext.Bookings.Update(booking);
+            dbContext.Bookings.Update(NewBookingState);
             await dbContext.SaveChangesAsync();
-            return booking;
-        }
-        public async Task<LateCheckOut> GetLateCheckOut(int BookingId)
-        {
-            var lateCheckOut = await dbContext.LateCheckOuts.FirstOrDefaultAsync(booking => booking.Id == BookingId);
-            if (lateCheckOut == null)
-            {
-                throw new Exception("Late Check-Out was not found in this booking yayyyy!!!1!");
-            }
-            else
-            {
-                return lateCheckOut;
-            }
+            return NewBookingState;
         }
     }
 }

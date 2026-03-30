@@ -19,39 +19,17 @@ namespace rec_be.Repository
             dbContext = _dbContext;
         }
 
-        public async Task<List<Guest>> CreateGuests(List<GuestRequestDTO> guests)
+        public async Task<List<Guest>> CreateGuests(List<Guest> guests)
         {   
-            List<Guest> AddedGuests = new List<Guest>();
-            foreach (GuestRequestDTO g in guests)
-            {
-                Guest guest = new Guest
-                {
-                    FirstName = g.FirstName,
-                    SecondName = g.SecondName,
-                    LastName = g.LastName,
-                    IdCard = g.IDCard,
-                    PhoneNumber = g.PhoneNumber,
-                    Email = g.Email
-                };
-                AddedGuests.Add(guest);
-                await dbContext.Guests.AddAsync(guest);
-            }
-            return AddedGuests;
+            await dbContext.Guests.AddRangeAsync(guests);
+            await dbContext.SaveChangesAsync();
+            return guests;
         }
-        public async Task<Guest> CreateSingleGuest(GuestRequestDTO guest)
+        public async Task<Guest> CreateSingleGuest(Guest guest)
         {
-            Guest newGuest = new Guest
-            {
-                FirstName = guest.FirstName,
-                SecondName = guest.SecondName,
-                LastName = guest.LastName,
-                IdCard = guest.IDCard,
-                PhoneNumber = guest.PhoneNumber,
-                Email = guest.Email
-            };
-
-            await dbContext.Guests.AddAsync(newGuest);
-            return newGuest;
+            await dbContext.Guests.AddAsync(guest);
+            await dbContext.SaveChangesAsync();
+            return guest;
         }
         public async Task<List<Guest>> GetAllActiveGuests()
         {
