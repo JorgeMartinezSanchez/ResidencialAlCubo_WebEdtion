@@ -1,3 +1,4 @@
+using rec_be.DTOs.RoomDTOs;
 using rec_be.Models;
 
 namespace rec_be.Interfaces.Repository
@@ -6,8 +7,8 @@ namespace rec_be.Interfaces.Repository
     {
         Task<List<Room>> GetAllRooms();
         Task<Room> GetRoomByRoomNumber(string RoomNumber);
-        Task SetRoomOccupation(int RoomId, bool Occupation);
-        Task<List<Room>> GetAllAvailableRooms();
-        Task<List<Room>> GetAllAvailableRooms(string RoomType);
+        Task<List<Room>> GetAllRoomsFromRoomType(string RoomType);
+        Task<Room> GetRoomById(int RoomId);
+        Task SetRoomOccupation(Room TargetRoom);
     }
 }
