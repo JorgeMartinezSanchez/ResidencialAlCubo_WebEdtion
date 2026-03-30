@@ -11,8 +11,5 @@ namespace rec_be.Interfaces.Strategy
         string GetRoomNumber();
         bool IsOccupied();
         decimal GetPrice();
-        decimal CalculateLateCheckOutCharge();
-        bool ValidateGuests(List<GuestRequestDTO> guests);
-        bool ValidatePayment(decimal amount);
     }
 }
