@@ -6,6 +6,7 @@ namespace rec_be.Interfaces.Repository
     public interface IRoomRepository
     {
         Task<List<Room>> GetAllRooms();
+        Task<List<RoomType>> GetAllRoomTypes();
         Task<Room> GetRoomByRoomNumber(string RoomNumber);
         Task<List<Room>> GetAllRoomsFromRoomType(string RoomType);
         Task<Room> GetRoomById(int RoomId);

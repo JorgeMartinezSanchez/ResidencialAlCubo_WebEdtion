@@ -7,11 +7,13 @@ namespace rec_be.Interfaces.Repository
     {
         Task<List<Guest>> CreateGuests(List<Guest> guests);
         Task<Guest> CreateSingleGuest(Guest guest);
-        Task<List<Guest>> GetAllActiveGuests();
-        Task<List<Guest>> GetAllPendantGuests();
         Task<List<Guest>> GetAllGuests();
-        Task<List<Guest>> GetGuestsByRoomId(int RoomId);
+        Task<Guest> GetGuest(Guest guest);
+        Task<List<Guest>> GetGuestsByBookingId(int BookingId);
+        Task UpdateGuestData(Guest GuestNewData);
         Task DeleteGuestFromRoom(int GuestId, int BookingId);
+        Task AddGuestToRoom(int _GuestId, int _BookingId);
         Task DeleteGuestFromDatabase(int GuestId);
+        Task<bool> GuestExists(Guest guest);
     }
 }

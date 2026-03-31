@@ -6,6 +6,7 @@ using rec_be.DTOs.BookingDTOs;
 using rec_be.DTOs.GuestDTOs;
 using rec_be.DTOs.LateCheckOutDTO;
 using rec_be.Interfaces.Strategy;
+using rec_be.Models;
 
 namespace rec_be.Interfaces.Services
 {
@@ -17,5 +18,6 @@ namespace rec_be.Interfaces.Services
         Task<BookingResponseDTO> CheckOut(int bookingId);
         Task<BookingResponseDTO> Cancel(int bookingId);
         bool ValidateDate(DateOnly StartDate, DateOnly EndDate);
+        Task<BookingResponseDTO> GetAllBookings();
     }
 }

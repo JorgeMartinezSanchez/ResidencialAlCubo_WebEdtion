@@ -12,6 +12,7 @@ namespace rec_be.DTOs.BookingDTOs
         public DateOnly EndDate { get; init; }
         [Required]
         public string Status { get; init; } = "";
+        public DateTime CheckInDate { get; init; }
         [Required]
         public decimal Total { get; init; }
     }

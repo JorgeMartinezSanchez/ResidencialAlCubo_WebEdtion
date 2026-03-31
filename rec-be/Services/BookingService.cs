@@ -1,5 +1,6 @@
+// 📁 Services/BookingService.cs
 using rec_be.DTOs.BookingDTOs;
-using rec_be.DTOs.GuestDTOs;
+using rec_be.Interfaces.Factory;
 using rec_be.Interfaces.Repository;
 using rec_be.Interfaces.Services;
 using rec_be.Interfaces.States;
@@ -12,6 +13,5 @@ namespace rec_be.Services
 {
     public class BookingService : IBookingService
     {
-        
     }
 }

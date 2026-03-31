@@ -22,6 +22,10 @@ namespace rec_be.Repository
         {
             return await dbContext.Rooms.ToListAsync();
         }
+        public async Task<List<RoomType>> GetAllRoomTypes()
+        {
+            return await dbContext.RoomTypes.ToListAsync();
+        }
         public async Task<Room> GetRoomByRoomNumber(string RoomNumber)
         {
             var room = await dbContext.Rooms.FirstOrDefaultAsync(room => room.RoomNumber == RoomNumber);
