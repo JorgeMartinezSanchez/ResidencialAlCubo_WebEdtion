@@ -44,6 +44,7 @@ CREATE TABLE booking(
     start_date DATE,
     end_date DATE,
     status VARCHAR,
+	check_in_date TIMESTAMP,
     total DECIMAL(10, 2),
     FOREIGN KEY (room_id) REFERENCES room(id)
 );
@@ -51,7 +52,7 @@ CREATE TABLE booking(
 CREATE TABLE room_guest(
     booking_id INTEGER,
     guest_id INTEGER,
-    PRIMARY KEY (booking, guest_id),
+    PRIMARY KEY (booking_id, guest_id),
     FOREIGN KEY (booking_id) REFERENCES booking(id),
     FOREIGN KEY (guest_id) REFERENCES guest(id)
 );
@@ -63,8 +64,6 @@ CREATE TABLE late_check_out(
     charge DECIMAL(10, 2),
     FOREIGN KEY (booking_id) REFERENCES booking(id)
 );
-
-ALTER TABLE room_guest RENAME COLUMN room_reservation_id TO booking_id
 
 CREATE TABLE config(
     config_key VARCHAR(100) PRIMARY KEY,
@@ -149,8 +148,10 @@ INSERT INTO late_check_out (booking_id, extra_hours, charge) VALUES
 
 
 
-INSERT INTO config (config_key, config_value) VALUES ('LateCheckOutHourlyRate', '50.00');
+INSERT INTO config (config_key, config_value) VALUES ('LateCheckOutHourlyRate', '50.0');
 SELECT config_value FROM Config WHERE config_key = 'LateCheckOutHourlyRate';
+
+SELECT * FROM room_type
 
 SELECT R.id, R.room_number, RT.type_name as room_type, RT.price, RT.capacity, R.occupied FROM room AS R
 INNER JOIN room_type AS RT ON R.room_type_id = RT.Id
@@ -159,7 +160,7 @@ SELECT g.id, g.first_name, g.second_name, g.last_name, g.id_card, g.phone_number
 INNER JOIN room_guest AS rg ON g.id = rg.guest_id
 INNER JOIN booking AS b ON rg.booking_id = b.Id;
 
-SELECT * FROM guest
+SELECT * FROM booking
 
 CREATE STORED PROCEDURE
 SELECT DISTINCT g.id, g.first_name, g.second_name, g.last_name, g.id_card, g.phone_number, g.email 

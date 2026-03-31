@@ -7,14 +7,14 @@ namespace rec_be.States.Booking_
     {
         public void CheckIn(Booking booking)
         {
-            booking.Status = "Pending";
+            booking.Status = "Active";
         }
-
+ 
         public void CheckOut(Booking booking)
         {
             throw new Exception("BOOKING STATE ERROR: Check-out cannot be made because it's on pending state.");
         }
-
+ 
         public void Cancel(Booking booking)
         {
             booking.Status = "Cancelled";

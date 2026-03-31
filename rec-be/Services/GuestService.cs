@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using rec_be.DTOs.GuestDTOs;
 using rec_be.Interfaces.Repository;
 using rec_be.Interfaces.Services;
@@ -20,96 +18,78 @@ namespace rec_be.Services
             guestRepository = _guestRepository;
         }
 
+        // ── HU-01: Register single guest ──────────────────────────────
         public async Task<GuestResponseDTO> AddGuest(GuestResponseDTO guest)
         {
             Guest newGuest = new Guest
             {
-                FirstName = guest.FirstName,
-                SecondName = guest.SecondName,
-                LastName = guest.LastName,
-                IdCard = guest.IDCard,
+                FirstName   = guest.FirstName,
+                SecondName  = guest.SecondName,
+                LastName    = guest.LastName,
+                IdCard      = guest.IDCard,
                 PhoneNumber = guest.PhoneNumber,
-                Email = guest.Email
+                Email       = guest.Email
             };
-            bool exists = await guestRepository.GuestExists(newGuest);
-            if (exists) throw new Exception($"GUEST SERVICE ERROR: Guest named {newGuest.FirstName} {newGuest.LastName} already exists");
 
-            Guest fetchedNewGuest = await guestRepository.CreateSingleGuest(newGuest);
-            return new GuestResponseDTO
-            {
-                Id = fetchedNewGuest.Id,
-                FirstName = fetchedNewGuest.FirstName,
-                SecondName = fetchedNewGuest.SecondName,
-                LastName = fetchedNewGuest.LastName,
-                IDCard = fetchedNewGuest.IdCard,
-                PhoneNumber = fetchedNewGuest.PhoneNumber,
-                Email = fetchedNewGuest.Email
-            };   
+            bool exists = await guestRepository.GuestExists(newGuest);
+            if (exists)
+                throw new Exception($"GUEST SERVICE ERROR: A guest with ID card {newGuest.IdCard} already exists.");
+
+            Guest created = await guestRepository.CreateSingleGuest(newGuest);
+            return MapToDTO(created);
         }
 
+        // ── HU-02: Register a list of guests for a booking ────────────
+        // If a guest already exists it is reused; otherwise it is created.
         public async Task<List<GuestResponseDTO>> AddGuestList(List<GuestRequestDTO> guests)
         {
-            List<GuestResponseDTO> guestsResponse = new List<GuestResponseDTO>();
+            List<GuestResponseDTO> response = new List<GuestResponseDTO>();
+
             foreach (GuestRequestDTO g in guests)
             {
                 Guest newGuest = new Guest
                 {
-                    FirstName = g.FirstName,
-                    SecondName = g.SecondName,
-                    LastName = g.LastName,
-                    IdCard = g.IDCard,
+                    FirstName   = g.FirstName,
+                    SecondName  = g.SecondName,
+                    LastName    = g.LastName,
+                    IdCard      = g.IDCard,
                     PhoneNumber = g.PhoneNumber,
-                    Email = g.Email
+                    Email       = g.Email
                 };
+
                 bool exists = await guestRepository.GuestExists(newGuest);
-                if (!exists)
-                {
-                    Guest fetchedNewGuest = await guestRepository.CreateSingleGuest(newGuest);
-                    guestsResponse.Add(new GuestResponseDTO
-                    {
-                        Id = fetchedNewGuest.Id,
-                        FirstName = fetchedNewGuest.FirstName,
-                        SecondName = fetchedNewGuest.SecondName,
-                        LastName = fetchedNewGuest.LastName,
-                        IDCard = fetchedNewGuest.IdCard,
-                        PhoneNumber = fetchedNewGuest.PhoneNumber,
-                        Email = fetchedNewGuest.Email
-                    });
-                } else
-                {
-                    Guest fetchedNewGuest = await guestRepository.GetGuest(newGuest);
-                    guestsResponse.Add(new GuestResponseDTO
-                    {
-                        Id = fetchedNewGuest.Id,
-                        FirstName = fetchedNewGuest.FirstName,
-                        SecondName = fetchedNewGuest.SecondName,
-                        LastName = fetchedNewGuest.LastName,
-                        IDCard = fetchedNewGuest.IdCard,
-                        PhoneNumber = fetchedNewGuest.PhoneNumber,
-                        Email = fetchedNewGuest.Email
-                    });
-                }
+
+                Guest result = exists
+                    ? await guestRepository.GetGuest(newGuest)
+                    : await guestRepository.CreateSingleGuest(newGuest);
+
+                response.Add(MapToDTO(result));
             }
-            return guestsResponse;
+
+            return response;
         }
+
+        // ── List guests by booking ────────────────────────────────────
         public async Task<List<GuestResponseDTO>> GetGuestsFromBookingId(int BookingId)
         {
-            var result = await guestRepository.GetGuestsByBookingId(BookingId);
-            if (result == null) throw new Exception("GUEST SERVICE ERROR: Guests in this booking are empty.");
-            List<GuestResponseDTO> resultDto = new List<GuestResponseDTO>();
-            foreach (Guest g in result)
-            {
-                resultDto.Add(new GuestResponseDTO
-                {
-                    FirstName = g.FirstName,
-                    SecondName = g.SecondName,
-                    LastName = g.LastName,
-                    IDCard = g.IdCard,
-                    PhoneNumber = g.PhoneNumber,
-                    Email = g.Email
-                });
-            }
-            return resultDto;
+            var guests = await guestRepository.GetGuestsByBookingId(BookingId);
+            if (guests == null || guests.Count == 0)
+                throw new Exception("GUEST SERVICE ERROR: No guests found for this booking.");
+
+            return guests.Select(MapToDTO).ToList();
         }
+
+        // ── Shared mapper ─────────────────────────────────────────────
+        private static GuestResponseDTO MapToDTO(Guest g) =>
+            new GuestResponseDTO
+            {
+                Id          = g.Id,
+                FirstName   = g.FirstName,
+                SecondName  = g.SecondName,
+                LastName    = g.LastName,
+                IDCard      = g.IdCard,
+                PhoneNumber = g.PhoneNumber,
+                Email       = g.Email
+            };
     }
 }

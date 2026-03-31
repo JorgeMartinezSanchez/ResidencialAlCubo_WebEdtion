@@ -10,6 +10,8 @@ namespace rec_be.Interfaces.Repository
         Task<Room> GetRoomByRoomNumber(string RoomNumber);
         Task<List<Room>> GetAllRoomsFromRoomType(string RoomType);
         Task<Room> GetRoomById(int RoomId);
+        Task<Room> GetRoomWithTypeById(int RoomId);
         Task SetRoomOccupation(Room TargetRoom);
+        Task<RoomType> GetRoomType(int RoomdId);
     }
 }

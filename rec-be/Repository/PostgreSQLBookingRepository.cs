@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using rec_be.Data;
 using rec_be.DTOs.BookingDTOs;
 using rec_be.Interfaces.Repository;
+using rec_be.Interfaces.Strategy;
 using rec_be.Models;
 
 namespace rec_be.Repository
@@ -31,6 +32,22 @@ namespace rec_be.Repository
         public async Task<Booking> GetBooking(int BookingId)
         {
             var booking = await dbContext.Bookings.FirstOrDefaultAsync(booking => booking.Id == BookingId);
+            if(booking == null)
+            {
+                throw new Exception("No booking was found.");
+            } else
+            {
+                return booking;
+            }
+        }
+        public async Task<Booking> GetBooking(BookingRequestDTO BookingRequestDto)
+        {
+            var booking = await dbContext.Bookings.FirstOrDefaultAsync(booking => (booking.RoomId == BookingRequestDto.RoomId)
+                                                                                &&(booking.StartDate == BookingRequestDto.StartDate)
+                                                                                &&(booking.EndDate == BookingRequestDto.EndDate)
+                                                                                &&(booking.Status == BookingRequestDto.Status)
+                                                                                &&(booking.CheckInDate == BookingRequestDto.CheckInDate)
+                                                                                &&(booking.Total == BookingRequestDto.Total));
             if(booking == null)
             {
                 throw new Exception("No booking was found.");

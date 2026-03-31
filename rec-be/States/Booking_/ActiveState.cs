@@ -11,7 +11,7 @@ namespace rec_be.States.Booking_
     {
         public void CheckIn(Booking booking)
         {
-            booking.Status = "Active";
+            throw new Exception("BOOKING STATE ERROR: Check-In cannot be done because this booking is already active.");
         }
         public void CheckOut(Booking booking)
         {
