@@ -11,13 +11,8 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
-    });
+builder.Services.AddControllers(); 
 
-builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 // PostgreSQL

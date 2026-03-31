@@ -15,10 +15,8 @@ namespace rec_be.DTOs.BookingDTOs
         
         [Required]
         public List<int> GuestIds { get; init; } = new List<int>();
+        
         [Required]
         public decimal Total { get; init; }
-
-        public string Status { get; init; } = "pending";
-        public DateTime CheckInDate { get; init; } = default;
     }
 }

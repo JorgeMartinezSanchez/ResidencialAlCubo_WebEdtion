@@ -11,6 +11,6 @@ namespace rec_be.Interfaces.Services
     public interface ILateCheckOutService
     {
         Task<LateCheckOutResponseDTO> CreateLateCheckOut(LateCheckOutRequestDTO NewLateCheckOut);
-        Task<decimal> CalculateTotalCharge(BookingRequestDTO bookingRequestDTO);
+        Task<decimal> CalculateTotalCharge(int BookingId);
     }
 }

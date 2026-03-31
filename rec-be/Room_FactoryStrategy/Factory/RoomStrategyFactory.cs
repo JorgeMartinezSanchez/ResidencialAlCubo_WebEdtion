@@ -20,10 +20,10 @@ namespace rec_be.Room_FactoryStrategy.Factory
             {
                 "Simple" => new SimpleRoomStrategy(room, lateCheckoutRate),
                 "Suite" => new SuiteRoomStrategy(room, lateCheckoutRate),
-                "Doble Matrimonial" => new MatrimonialDoubleRoomStrategy(room, lateCheckoutRate),
-                "Doble Individual" => new IndividualDoubleBedRoomStrategy(room, lateCheckoutRate),
-                "Grupal 3" => new GroupalForThreePeopleRoomStrategy(room, lateCheckoutRate),
-                "Grupal 4" => new GroupalForFourPeopleRoomStrategy(room, lateCheckoutRate),
+                "Matrimonial Double" => new MatrimonialDoubleRoomStrategy(room, lateCheckoutRate),
+                "Individual Bed Double" => new IndividualDoubleBedRoomStrategy(room, lateCheckoutRate),
+                "Groupal for 3 people" => new GroupalForThreePeopleRoomStrategy(room, lateCheckoutRate),
+                "Groupal for 4 people" => new GroupalForFourPeopleRoomStrategy(room, lateCheckoutRate),
                 _ => throw new ArgumentException(
                     $"Tipo de habitación no soportado: {room.RoomType.TypeName}")
             };

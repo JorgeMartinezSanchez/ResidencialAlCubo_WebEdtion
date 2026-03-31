@@ -64,14 +64,15 @@ namespace rec_be.Services
         }
 
         // ── Calcular el cargo total acumulado de un booking ───────────
-        public async Task<decimal> CalculateTotalCharge(BookingRequestDTO bookingRequestDTO)
+        public async Task<decimal> CalculateTotalCharge(int BookingId)
         {
-            var rawBooking   = await _bookingRepo.GetBooking(bookingRequestDTO);
+            var rawBooking   = await _bookingRepo.GetBooking(BookingId);
             var lcosInOneRoom = await _lateCheckOutRepo.GetLateCheckOutsFromBookingId(rawBooking.Id);
 
             if (lcosInOneRoom == null || lcosInOneRoom.Count == 0)
                 return 0.0m;
-
+            rawBooking.Total = lcosInOneRoom.Sum(lco => lco.Charge);
+            await _bookingRepo.ChangeBookingStatus(rawBooking);
             // Los cargos ya fueron calculados con Strategy al momento de crearlos,
             // así que simplemente los sumamos.
             return lcosInOneRoom.Sum(lco => lco.Charge);

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using rec_be.DTOs.BookingDTOs;
 using rec_be.Interfaces.Services;
-using rec_be.Models;
 
 namespace rec_be.Controller
 {
@@ -13,7 +12,7 @@ namespace rec_be.Controller
     [Route("[controller]")]
     public class BookingController : ControllerBase
     {
-        private IBookingService bookingService;
+        private readonly IBookingService bookingService;
 
         public BookingController(IBookingService _bookingService)
         {
@@ -21,17 +20,17 @@ namespace rec_be.Controller
         }
         
         [HttpPost("Create")]
-        public async Task<IActionResult> CreateBooking([FromBody] BookingRequestDTO bookingRequest)
+        public async Task<IActionResult> CreateBooking([FromBody] BookingRequestDTO request)
         {
             try
             {
-                // Validate that at least one guest is selected
-                if (bookingRequest.GuestIds == null || !bookingRequest.GuestIds.Any())
-                {
-                    return BadRequest("At least one guest must be selected for the booking.");
-                }
+                if (request == null)
+                    return BadRequest("Booking request cannot be null.");
                 
-                var booking = await bookingService.CreateBooking(bookingRequest, bookingRequest.GuestIds);
+                if (request.GuestIds == null || !request.GuestIds.Any())
+                    return BadRequest("At least one guest must be selected for the booking.");
+                
+                var booking = await bookingService.CreateBooking(request, request.GuestIds);
                 return Ok(booking);
             }
             catch (Exception ex)
@@ -45,6 +44,27 @@ namespace rec_be.Controller
         {
             var bookings = await bookingService.GetAllBookings();
             return Ok(bookings);
+        }
+
+        [HttpPut("checkin")]
+        public async Task<IActionResult> CheckIn(int BookingId)
+        {
+            var booking = await bookingService.CheckIn(BookingId);
+            return Ok(booking);
+        }
+
+        [HttpPut("checkout")]
+        public async Task<IActionResult> CheckOut(int BookingId)
+        {
+            var booking = await bookingService.CheckOut(BookingId);
+            return Ok(booking);
+        }
+
+        [HttpPut("cancel")]
+        public async Task<IActionResult> Cancel(int BookingId)
+        {
+            var booking = await bookingService.Cancel(BookingId);
+            return Ok(booking);
         }
     }
 }

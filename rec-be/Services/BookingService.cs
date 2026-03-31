@@ -1,4 +1,5 @@
 // 📁 Services/BookingService.cs
+using Microsoft.EntityFrameworkCore;
 using rec_be.DTOs.BookingDTOs;
 using rec_be.DTOs.LateCheckOutDTO;
 using rec_be.Interfaces.Factory;
@@ -37,10 +38,10 @@ namespace rec_be.Services
         // ── State pattern: resuelve el estado correcto en runtime ─────
         private IBookingState ResolveState(string status) => status switch
         {
-            "Pending"   => new PendingState(),
-            "Active"    => new ActiveState(),
-            "Cancelled" => new CancelledState(),
-            "Finished"  => new FinishedState(),
+            "pending"   => new PendingState(),
+            "active"    => new ActiveState(),
+            "cancelled" => new CancelledState(),
+            "finished"  => new FinishedState(),
             _ => throw new Exception($"BOOKING SERVICE ERROR: Unknown booking status '{status}'.")
         };
 
@@ -57,60 +58,91 @@ namespace rec_be.Services
                 Total        = booking.Total
             };
 
-        // ── HU-02: Crear reserva ──────────────────────────────────────
-        public async Task<BookingResponseDTO> CreateBooking(BookingRequestDTO bookingRequest, List<int> guestIds) // Add guest IDs parameter
+        public async Task<BookingResponseDTO> CreateBooking(BookingRequestDTO bookingRequest, List<int> guestIds)
         {
-            // CA-2: Validate dates
-            if (!ValidateDate(bookingRequest.StartDate, bookingRequest.EndDate))
-                throw new Exception("BOOKING SERVICE ERROR: End date must be after start date.");
-
-            var room = await _roomRepo.GetRoomWithTypeById(bookingRequest.RoomId);
-
-            // CA-1: Check if room exists and is not occupied
-            if (room.Occupied)
-                throw new Exception("BOOKING SERVICE ERROR: Room is currently occupied.");
-
-            // CA-4: Validate guest count against room capacity
-            var guestCount = guestIds?.Count ?? 0;
-            var rateKvp = await _configRepo.GetConfigByKey("late_checkout_rate");
-            decimal rate = decimal.Parse(rateKvp.Value);
-            var strategy = _strategyFactory.CreateStrategy(room, rate);
-            
-            if (!ValidateGuestAmount(guestCount, strategy))
-                throw new Exception($"BOOKING SERVICE ERROR: Room capacity is {strategy.GetMaxCapacity()} guests, but you're trying to book for {guestCount} guests.");
-
-            // CA-3: Prevent overlapping reservations
-            var allBookings = await _bookingRepo.GetAllBookings();
-            bool overlaps = allBookings.Any(b =>
-                b.RoomId == bookingRequest.RoomId &&
-                b.Status != "Cancelled" &&
-                b.Status != "Finished" &&
-                b.StartDate < bookingRequest.EndDate &&
-                b.EndDate > bookingRequest.StartDate);
-
-            if (overlaps)
-                throw new Exception("BOOKING SERVICE ERROR: Room is already reserved for that date range.");
-
-            // Create the booking
-            var newBooking = new Booking
+            try
             {
-                RoomId = bookingRequest.RoomId,
-                StartDate = bookingRequest.StartDate,
-                EndDate = bookingRequest.EndDate,
-                Status = "Pending",
-                CheckInDate = bookingRequest.StartDate.ToDateTime(TimeOnly.Parse("14:00")), // Default check-in time
-                Total = bookingRequest.Total
-            };
+                // CA-2: Validate dates
+                if (!ValidateDate(bookingRequest.StartDate, bookingRequest.EndDate))
+                    throw new Exception("BOOKING SERVICE ERROR: End date must be after start date.");
 
-            var created = await _bookingRepo.CreateBooking(newBooking);
-            
-            // Associate guests with the booking
-            if (guestIds != null && guestIds.Any())
-            {
-                await _bookingRepo.AssignGuestsToBooking(created.Id, guestIds);
+                // Log the room ID being requested
+                Console.WriteLine($"Attempting to get room with ID: {bookingRequest.RoomId}");
+                
+                var room = await _roomRepo.GetRoomWithTypeById(bookingRequest.RoomId);
+                
+                // Log room details
+                Console.WriteLine($"Room found: ID={room.Id}, Number={room.RoomNumber}, Type={room.RoomType?.TypeName}");
+
+                // CA-1: Check if room exists and is not occupied
+                if (room.Occupied)
+                    throw new Exception("BOOKING SERVICE ERROR: Room is currently occupied.");
+
+                // CA-4: Validate guest count against room capacity
+                var guestCount = guestIds?.Count ?? 0;
+                var rateKvp = await _configRepo.GetConfigByKey("LateCheckOutHourlyRate");
+                decimal rate = decimal.Parse(rateKvp.Value);
+                var strategy = _strategyFactory.CreateStrategy(room, rate);
+                
+                if (!ValidateGuestAmount(guestCount, strategy))
+                    throw new Exception($"BOOKING SERVICE ERROR: Room capacity is {strategy.GetMaxCapacity()} guests, but you're trying to book for {guestCount} guests.");
+
+                // CA-3: Prevent overlapping reservations
+                var allBookings = await _bookingRepo.GetAllBookings();
+                bool overlaps = allBookings.Any(b =>
+                    b.RoomId == bookingRequest.RoomId &&
+                    b.Status != "cancelled" &&
+                    b.Status != "finished" &&
+                    b.StartDate < bookingRequest.EndDate &&
+                    b.EndDate > bookingRequest.StartDate);
+
+                if (overlaps)
+                    throw new Exception("BOOKING SERVICE ERROR: Room is already reserved for that date range.");
+
+                // Create the booking
+                var newBooking = new Booking
+                {
+                    RoomId = bookingRequest.RoomId,
+                    StartDate = bookingRequest.StartDate,
+                    EndDate = bookingRequest.EndDate,
+                    Status = "pending",
+                    CheckInDate = default,
+                    CheckOutDate = default,
+                    Total = bookingRequest.Total
+                };
+
+                // Log before saving
+                Console.WriteLine($"Creating booking: RoomId={newBooking.RoomId}, StartDate={newBooking.StartDate}, EndDate={newBooking.EndDate}, Total={newBooking.Total}");
+                
+                var created = await _bookingRepo.CreateBooking(newBooking);
+                
+                // Log after save
+                Console.WriteLine($"Booking created with ID: {created.Id}");
+                
+                // Associate guests with the booking
+                if (guestIds != null && guestIds.Any())
+                {
+                    // Verify guests exist before trying to associate them
+                    foreach (var guestId in guestIds)
+                    {
+                        Console.WriteLine($"Checking guest ID: {guestId}");
+                        // You might want to add a check here if guests exist
+                    }
+                    
+                    await _bookingRepo.AssignGuestsToBooking(created.Id, guestIds);
+                }
+                
+                return MapToDTO(created, room);
             }
-            
-            return MapToDTO(created, room);
+            catch (DbUpdateException ex)
+            {
+                // This will show the inner exception details
+                throw new Exception($"Database error: {ex.InnerException?.Message ?? ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         // ── HU-03: Listar reservas activas y futuras ──────────────────
@@ -121,7 +153,7 @@ namespace rec_be.Services
             var roomMap  = rooms.ToDictionary(r => r.Id);
 
             return bookings
-                .Where(b => b.Status == "pending" || b.Status == "active")
+                .Where(b => b.Status == "pending" || b.Status == "active")  // ← Capitalized to match state pattern
                 .OrderBy(b => b.StartDate)
                 .Select(b =>
                 {
@@ -156,6 +188,7 @@ namespace rec_be.Services
 
             IBookingState state = ResolveState(booking.Status);
             state.CheckOut(booking);                 // Status → "Finished"
+            booking.CheckOutDate = DateTime.UtcNow;
 
             // Verificar si aplica Late Check-Out
             var limitKvp  = await _configRepo.GetConfigByKey("checkout_limit_hour");

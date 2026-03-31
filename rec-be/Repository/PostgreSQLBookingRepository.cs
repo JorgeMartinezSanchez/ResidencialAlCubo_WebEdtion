@@ -20,10 +20,25 @@ namespace rec_be.Repository
         }
         public async Task<Booking> CreateBooking(Booking NewBooking)
         {
-            await dbContext.Bookings.AddAsync(NewBooking);
-            await dbContext.SaveChangesAsync();
-
-            return NewBooking;
+            try
+            {
+                // Verify the room exists before trying to insert
+                var roomExists = await dbContext.Rooms.AnyAsync(r => r.Id == NewBooking.RoomId);
+                if (!roomExists)
+                {
+                    throw new Exception($"Room with ID {NewBooking.RoomId} does not exist in the database.");
+                }
+                
+                await dbContext.Bookings.AddAsync(NewBooking);
+                await dbContext.SaveChangesAsync();
+                return NewBooking;
+            }
+            catch (DbUpdateException ex)
+            {
+                // Log the inner exception details
+                var innerMessage = ex.InnerException?.Message ?? ex.Message;
+                throw new Exception($"Failed to create booking: {innerMessage}");
+            }
         }
         public async Task<List<Booking>> GetAllBookings()
         {
@@ -45,8 +60,6 @@ namespace rec_be.Repository
             var booking = await dbContext.Bookings.FirstOrDefaultAsync(booking => (booking.RoomId == BookingRequestDto.RoomId)
                                                                                 &&(booking.StartDate == BookingRequestDto.StartDate)
                                                                                 &&(booking.EndDate == BookingRequestDto.EndDate)
-                                                                                &&(booking.Status == BookingRequestDto.Status)
-                                                                                &&(booking.CheckInDate == BookingRequestDto.CheckInDate)
                                                                                 &&(booking.Total == BookingRequestDto.Total));
             if(booking == null)
             {
