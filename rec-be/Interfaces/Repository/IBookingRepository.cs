@@ -11,5 +11,6 @@ namespace rec_be.Interfaces.Repository
         Task<Booking> GetBooking(int BookingId);
         Task<Booking> GetBooking(BookingRequestDTO BookingRequestDto);
         Task<Booking> ChangeBookingStatus(Booking NewBookingState);
+        Task AssignGuestsToBooking(int bookingId, List<int> guestIds);
     }
 }

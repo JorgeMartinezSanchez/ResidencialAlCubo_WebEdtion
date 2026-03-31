@@ -9,7 +9,7 @@ namespace rec_be.Interfaces.Services
     public interface IGuestService
     {
         Task<List<GuestResponseDTO>> AddGuestList(List<GuestRequestDTO> guests);
-        Task<GuestResponseDTO> AddGuest(GuestResponseDTO guest);
+        Task<GuestResponseDTO> AddGuest(GuestRequestDTO guest);
         Task<List<GuestResponseDTO>> GetGuestsFromBookingId(int BookingId);
     }
 }
