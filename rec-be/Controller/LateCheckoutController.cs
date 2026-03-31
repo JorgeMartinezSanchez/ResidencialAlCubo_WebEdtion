@@ -19,14 +19,14 @@ namespace rec_be.Controller
             lateCheckOutService = _lateCheckOutService;
         }
 
-        [HttpPost("new/latecheckout/{BookingId}")]
+        [HttpPost("new/latecheckout")]
         public async Task<IActionResult> NewLateCheckout([FromBody] LateCheckOutRequestDTO newLateCheckOut)
         {
             var latecheckout = await lateCheckOutService.CreateLateCheckOut(newLateCheckOut);
             return Ok(latecheckout);
         }
 
-        [HttpGet("Totalcost")]
+        [HttpGet("Totalcost/{BookingId}")]
         public async Task<IActionResult> GetTotalOfLateCheckoutFromABooking(int BookingId)
         {
             var total = await lateCheckOutService.CalculateTotalCharge(BookingId);
