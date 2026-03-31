@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using rec_be;
 using rec_be.Data;
 using rec_be.Interfaces.Factory;
 using rec_be.Interfaces.Repository;
@@ -9,6 +10,12 @@ using rec_be.Services;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
+    });
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
