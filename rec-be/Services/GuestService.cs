@@ -39,7 +39,6 @@ namespace rec_be.Services
             return MapToDTO(created);
         }
 
-        // ── HU-02: Register a list of guests for a booking ────────────
         // If a guest already exists it is reused; otherwise it is created.
         public async Task<List<GuestResponseDTO>> AddGuestList(List<GuestRequestDTO> guests)
         {
@@ -68,8 +67,6 @@ namespace rec_be.Services
 
             return response;
         }
-
-        // ── List guests by booking ────────────────────────────────────
         public async Task<List<GuestResponseDTO>> GetGuestsFromBookingId(int BookingId)
         {
             var guests = await guestRepository.GetGuestsByBookingId(BookingId);
@@ -79,7 +76,6 @@ namespace rec_be.Services
             return guests.Select(MapToDTO).ToList();
         }
 
-        // ── Shared mapper ─────────────────────────────────────────────
         private static GuestResponseDTO MapToDTO(Guest g) =>
             new GuestResponseDTO
             {

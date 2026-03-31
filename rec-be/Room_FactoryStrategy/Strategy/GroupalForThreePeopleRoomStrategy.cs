@@ -17,7 +17,7 @@ namespace rec_be.RoomStrategy
             "Habitación grupal para 3 personas, con camas individuales";
         
         public override decimal CalculateLateCheckoutFee(int extraHours) =>
-            extraHours * (_lateCheckoutRate * 1.1m); // 10% más
+            extraHours * (_lateCheckoutRate * 1.1m);
         
         public override bool ValidateGuestCount(int guestCount) =>
             guestCount >= 1 && guestCount <= GetMaxCapacity();

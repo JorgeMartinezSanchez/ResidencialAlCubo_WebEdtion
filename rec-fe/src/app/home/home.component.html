@@ -1,0 +1,52 @@
+<!-- Stats Section con datos reales -->
+<section class="stats-section">
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">🏨</div>
+      <div class="stat-value">{{ stats.totalRooms }}</div>
+      <div class="stat-title">Total Habitaciones</div>
+      <div class="stat-desc">{{ stats.availableRooms }} disponibles</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-value">{{ stats.roomTypes }}</div>
+      <div class="stat-title">Tipos de Habitación</div>
+      <div class="stat-desc">Para cada necesidad</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">⭐</div>
+      <div class="stat-value">4.8</div>
+      <div class="stat-title">Calificación</div>
+      <div class="stat-desc">En Google Reviews</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🕐</div>
+      <div class="stat-value">24/7</div>
+      <div class="stat-title">Servicio</div>
+      <div class="stat-desc">Siempre disponibles</div>
+    </div>
+  </div>
+</section>
+
+<!-- Room Types Section con datos de API -->
+<section class="room-types">
+  <div class="section-header">
+    <span class="section-badge">Nuestras Habitaciones</span>
+    <h2>Encuentra tu espacio perfecto</h2>
+    <p>Selecciona entre nuestras {{ stats.roomTypes }} categorías exclusivas</p>
+  </div>
+  <div class="room-grid">
+    <div class="room-card" *ngFor="let room of roomTypes">
+      <div class="room-icon">{{ room.icon }}</div>
+      <h3>{{ room.name }}</h3>
+      <p>{{ room.description }}</p>
+      <div class="room-features">
+        <span><span class="feature-icon">👤</span> {{ room.capacity }} personas</span>
+        <span><span class="feature-icon">💰</span> Bs. {{ room.price }}/noche</span>
+      </div>
+      <button class="room-btn" (click)="selectRoomType(room.name)">
+        Ver disponibilidad →
+      </button>
+    </div>
+  </div>
+</section>

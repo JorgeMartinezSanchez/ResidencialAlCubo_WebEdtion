@@ -17,7 +17,7 @@ namespace rec_be.RoomStrategy
             "Habitación grupal para 4 personas, ideal para familias o grupos pequeños";
         
         public override decimal CalculateLateCheckoutFee(int extraHours) =>
-            extraHours * (_lateCheckoutRate * 1.2m); // 20% más
+            extraHours * (_lateCheckoutRate * 1.2m);
         
         public override bool ValidateGuestCount(int guestCount) =>
             guestCount >= 1 && guestCount <= GetMaxCapacity();
