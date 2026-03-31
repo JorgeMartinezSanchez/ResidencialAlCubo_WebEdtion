@@ -39,7 +39,7 @@ namespace rec_be.Services
             var room    = await _roomRepo.GetRoomWithTypeById(booking.RoomId);
 
             // Leer la tarifa base desde configuración
-            var rateKvp = await _configRepo.GetConfigByKey("late_checkout_rate");
+            var rateKvp = await _configRepo.GetConfigByKey("LateCheckOutHourlyRate");
             decimal rate = decimal.Parse(rateKvp.Value);
 
             // Strategy pattern: cada tipo de habitación aplica su propio multiplicador

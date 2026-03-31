@@ -19,7 +19,7 @@ namespace rec_be.Services
         }
 
         // ── HU-01: Register single guest ──────────────────────────────
-        public async Task<GuestResponseDTO> AddGuest(GuestResponseDTO guest)
+        public async Task<GuestResponseDTO> AddGuest(GuestRequestDTO guest)
         {
             Guest newGuest = new Guest
             {
