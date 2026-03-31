@@ -62,5 +62,17 @@ namespace rec_be.Repository
             await dbContext.SaveChangesAsync();
             return NewBookingState;
         }
+
+        public async Task AssignGuestsToBooking(int bookingId, List<int> guestIds)
+        {
+            var roomGuests = guestIds.Select(guestId => new RoomGuest
+            {
+                BookingId = bookingId,
+                GuestId = guestId
+            });
+            
+            await dbContext.RoomGuests.AddRangeAsync(roomGuests);
+            await dbContext.SaveChangesAsync();
+        }
     }
 }
