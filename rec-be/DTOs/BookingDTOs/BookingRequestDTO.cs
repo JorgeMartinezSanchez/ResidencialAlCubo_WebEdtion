@@ -6,14 +6,19 @@ namespace rec_be.DTOs.BookingDTOs
     {
         [Required]
         public int RoomId { get; init; }
+        
         [Required] 
         public DateOnly StartDate { get; init; }
+        
         [Required]
         public DateOnly EndDate { get; init; }
+        
         [Required]
-        public string Status { get; init; } = "";
-        public DateTime CheckInDate { get; init; }
+        public List<int> GuestIds { get; init; } = new List<int>();
         [Required]
         public decimal Total { get; init; }
+
+        public string Status { get; init; } = "pending";
+        public DateTime CheckInDate { get; init; } = default;
     }
 }
