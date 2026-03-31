@@ -77,5 +77,18 @@ namespace rec_be.Services
             // así que simplemente los sumamos.
             return lcosInOneRoom.Sum(lco => lco.Charge);
         }
+
+        // En LateCheckOutService.cs
+        public async Task<List<LateCheckOutResponseDTO>> GetLateCheckOutsByBookingId(int bookingId)
+        {
+            var lcos = await _lateCheckOutRepo.GetLateCheckOutsFromBookingId(bookingId);
+            
+            return lcos.Select(lco => new LateCheckOutResponseDTO
+            {
+                BookingId = lco.BookingId,
+                ExtraHours = lco.ExtraHours,
+                Charge = lco.Charge
+            }).ToList();
+        }
     }
 }

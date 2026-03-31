@@ -99,6 +99,7 @@ namespace rec_be.Services
                 if (overlaps)
                     throw new Exception("BOOKING SERVICE ERROR: Room is already reserved for that date range.");
 
+                var total = room.RoomType!.Price * (bookingRequest.EndDate.DayNumber - bookingRequest.StartDate.DayNumber);
                 // Create the booking
                 var newBooking = new Booking
                 {
@@ -108,7 +109,7 @@ namespace rec_be.Services
                     Status = "pending",
                     CheckInDate = default,
                     CheckOutDate = default,
-                    Total = bookingRequest.Total
+                    Total = total
                 };
 
                 // Log before saving
@@ -184,28 +185,35 @@ namespace rec_be.Services
         public async Task<BookingResponseDTO> CheckOut(int bookingId)
         {
             var booking = await _bookingRepo.GetBooking(bookingId);
-            var room    = await _roomRepo.GetRoomWithTypeById(booking.RoomId);
+            var room = await _roomRepo.GetRoomWithTypeById(booking.RoomId);
 
             IBookingState state = ResolveState(booking.Status);
-            state.CheckOut(booking);                 // Status → "Finished"
+            state.CheckOut(booking);                 // Status → "finished"
             booking.CheckOutDate = DateTime.UtcNow;
+            
+            decimal lateCheckOutCharge = 0;
 
             // Verificar si aplica Late Check-Out
-            var limitKvp  = await _configRepo.GetConfigByKey("checkout_limit_hour");
+            var limitKvp = await _configRepo.GetConfigByKey("checkout_limit_hour");
             int limitHour = int.Parse(limitKvp.Value);
-            var now       = DateTime.UtcNow;
+            var now = DateTime.Now;
 
             if (now.Hour >= limitHour)
             {
                 int extraHours = now.Hour - limitHour + 1;
-
-                // Delegamos al LateCheckOutService — él resuelve el Strategy internamente
-                await _lateCheckOutService.CreateLateCheckOut(new LateCheckOutRequestDTO
+                
+                // Crear el late check-out y obtener el cargo
+                var lateCheckOut = await _lateCheckOutService.CreateLateCheckOut(new LateCheckOutRequestDTO
                 {
-                    BookingId  = booking.Id,
+                    BookingId = booking.Id,
                     ExtraHours = extraHours
                 });
+                
+                lateCheckOutCharge = lateCheckOut.Charge;
             }
+
+            // Sumar el cargo del late checkout al total de la reserva
+            booking.Total += lateCheckOutCharge;
 
             room.Occupied = false;
             await _roomRepo.SetRoomOccupation(room);
@@ -240,5 +248,17 @@ namespace rec_be.Services
         // ── Validación de fechas ──────────────────────────────────────
         public bool ValidateDate(DateOnly startDate, DateOnly endDate)
             => endDate > startDate;
+
+        public async Task<decimal> RecalculateTotalWithLateCheckOuts(int bookingId)
+        {
+            var booking = await _bookingRepo.GetBooking(bookingId);
+            var lateCheckOuts = await _lateCheckOutService.GetLateCheckOutsByBookingId(bookingId);
+            
+            decimal lateCheckOutTotal = lateCheckOuts.Sum(lco => lco.Charge);
+            booking.Total += lateCheckOutTotal;
+            
+            await _bookingRepo.ChangeBookingStatus(booking);
+            return booking.Total;
+        }
     }
 }

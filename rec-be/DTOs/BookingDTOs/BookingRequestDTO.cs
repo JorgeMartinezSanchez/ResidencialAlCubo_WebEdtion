@@ -15,8 +15,6 @@ namespace rec_be.DTOs.BookingDTOs
         
         [Required]
         public List<int> GuestIds { get; init; } = new List<int>();
-        
-        [Required]
         public decimal Total { get; init; }
     }
 }

@@ -46,21 +46,21 @@ namespace rec_be.Controller
             return Ok(bookings);
         }
 
-        [HttpPut("checkin")]
+        [HttpPut("checkin/{BookingId}")]
         public async Task<IActionResult> CheckIn(int BookingId)
         {
             var booking = await bookingService.CheckIn(BookingId);
             return Ok(booking);
         }
 
-        [HttpPut("checkout")]
+        [HttpPut("checkout/{BookingId}")]
         public async Task<IActionResult> CheckOut(int BookingId)
         {
             var booking = await bookingService.CheckOut(BookingId);
             return Ok(booking);
         }
 
-        [HttpPut("cancel")]
+        [HttpPut("cancel/{BookingId}")]
         public async Task<IActionResult> Cancel(int BookingId)
         {
             var booking = await bookingService.Cancel(BookingId);

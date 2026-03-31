@@ -15,11 +15,11 @@ namespace rec_be.States.Booking_
         }
         public void CheckOut(Booking booking)
         {
-            booking.Status = "Finished";
+            booking.Status = "finished";
         }
         public void Cancel(Booking booking)
         {
-            booking.Status = "Cancelled";
+            booking.Status = "cancelled";
         }
     }
 }

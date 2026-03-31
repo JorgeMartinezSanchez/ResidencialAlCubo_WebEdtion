@@ -7,7 +7,7 @@ namespace rec_be.States.Booking_
     {
         public void CheckIn(Booking booking)
         {
-            booking.Status = "Active";
+            booking.Status = "active";
         }
  
         public void CheckOut(Booking booking)
@@ -17,7 +17,7 @@ namespace rec_be.States.Booking_
  
         public void Cancel(Booking booking)
         {
-            booking.Status = "Cancelled";
+            booking.Status = "cancelled";
         }
     }
 }
