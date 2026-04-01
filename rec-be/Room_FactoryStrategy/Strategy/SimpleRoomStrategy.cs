@@ -17,7 +17,7 @@ namespace rec_be.RoomStrategy
             "Habitación económica, ideal para viajeros solitarios";
         
         public override decimal CalculateLateCheckoutFee(int extraHours) =>
-            extraHours * (_lateCheckoutRate * 0.8m); // 20% menos
+            extraHours * (_lateCheckoutRate * 0.8m);
         
         public override bool ValidateGuestCount(int guestCount) =>
             guestCount == 1 && guestCount <= GetMaxCapacity();

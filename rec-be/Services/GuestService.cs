@@ -18,7 +18,7 @@ namespace rec_be.Services
             guestRepository = _guestRepository;
         }
 
-        // ── HU-01: Register single guest ──────────────────────────────
+        // HU-01
         public async Task<GuestResponseDTO> AddGuest(GuestRequestDTO guest)
         {
             Guest newGuest = new Guest
@@ -39,7 +39,7 @@ namespace rec_be.Services
             return MapToDTO(created);
         }
 
-        // If a guest already exists it is reused; otherwise it is created.
+        // If a guest already exists it is reused, otherwise it is created.
         public async Task<List<GuestResponseDTO>> AddGuestList(List<GuestRequestDTO> guests)
         {
             List<GuestResponseDTO> response = new List<GuestResponseDTO>();

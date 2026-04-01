@@ -70,8 +70,7 @@ namespace rec_be.Services
                 Console.WriteLine($"Attempting to get room with ID: {bookingRequest.RoomId}");
                 
                 var room = await _roomRepo.GetRoomWithTypeById(bookingRequest.RoomId);
-                
-                // Log room details
+
                 Console.WriteLine($"Room found: ID={room.Id}, Number={room.RoomNumber}, Type={room.RoomType?.TypeName}");
 
                 // CA-1: Check if room exists and is not occupied
@@ -87,7 +86,7 @@ namespace rec_be.Services
                 if (!ValidateGuestAmount(guestCount, strategy))
                     throw new Exception($"BOOKING SERVICE ERROR: Room capacity is {strategy.GetMaxCapacity()} guests, but you're trying to book for {guestCount} guests.");
 
-                // CA-3: Prevent overlapping reservations
+                // Prevent overlapping reservations
                 var allBookings = await _bookingRepo.GetAllBookings();
                 bool overlaps = allBookings.Any(b =>
                     b.RoomId == bookingRequest.RoomId &&
@@ -116,18 +115,14 @@ namespace rec_be.Services
                 Console.WriteLine($"Creating booking: RoomId={newBooking.RoomId}, StartDate={newBooking.StartDate}, EndDate={newBooking.EndDate}, Total={newBooking.Total}");
                 
                 var created = await _bookingRepo.CreateBooking(newBooking);
-                
-                // Log after save
+
                 Console.WriteLine($"Booking created with ID: {created.Id}");
-                
-                // Associate guests with the booking
+
                 if (guestIds != null && guestIds.Any())
                 {
-                    // Verify guests exist before trying to associate them
                     foreach (var guestId in guestIds)
                     {
                         Console.WriteLine($"Checking guest ID: {guestId}");
-                        // You might want to add a check here if guests exist
                     }
                     
                     await _bookingRepo.AssignGuestsToBooking(created.Id, guestIds);
@@ -137,7 +132,6 @@ namespace rec_be.Services
             }
             catch (DbUpdateException ex)
             {
-                // This will show the inner exception details
                 throw new Exception($"Database error: {ex.InnerException?.Message ?? ex.Message}");
             }
             catch (Exception ex)
@@ -146,7 +140,7 @@ namespace rec_be.Services
             }
         }
 
-        // ── HU-03: Listar reservas activas y futuras ──────────────────
+        // HU-03
         public async Task<List<BookingResponseDTO>> GetAllBookings()
         {
             var bookings = await _bookingRepo.GetAllBookings();
@@ -154,7 +148,7 @@ namespace rec_be.Services
             var roomMap  = rooms.ToDictionary(r => r.Id);
 
             return bookings
-                .Where(b => b.Status == "pending" || b.Status == "active")  // ← Capitalized to match state pattern
+                .Where(b => b.Status == "pending" || b.Status == "active")
                 .OrderBy(b => b.StartDate)
                 .Select(b =>
                 {
@@ -164,14 +158,14 @@ namespace rec_be.Services
                 .ToList();
         }
 
-        // ── HU-04: Check In ───────────────────────────────────────────
+        // HU-04 
         public async Task<BookingResponseDTO> CheckIn(int bookingId)
         {
             var booking = await _bookingRepo.GetBooking(bookingId);
             var room    = await _roomRepo.GetRoomWithTypeById(booking.RoomId);
 
             IBookingState state = ResolveState(booking.Status);
-            state.CheckIn(booking);                  // Status → "Active"
+            state.CheckIn(booking);
             booking.CheckInDate = DateTime.UtcNow;
 
             room.Occupied = true;
@@ -181,19 +175,19 @@ namespace rec_be.Services
             return MapToDTO(booking, room);
         }
 
-        // ── HU-08: Check Out con Late Check-Out opcional ──────────────
+        //  HU-08: Check Out con optional late Check-Out
         public async Task<BookingResponseDTO> CheckOut(int bookingId)
         {
             var booking = await _bookingRepo.GetBooking(bookingId);
             var room = await _roomRepo.GetRoomWithTypeById(booking.RoomId);
 
             IBookingState state = ResolveState(booking.Status);
-            state.CheckOut(booking);                 // Status → "finished"
+            state.CheckOut(booking);
             booking.CheckOutDate = DateTime.UtcNow;
             
             decimal lateCheckOutCharge = 0;
 
-            // Verificar si aplica Late Check-Out
+            // Verify if late checkout applies to this
             var limitKvp = await _configRepo.GetConfigByKey("checkout_limit_hour");
             int limitHour = int.Parse(limitKvp.Value);
             var now = DateTime.Now;
@@ -202,7 +196,7 @@ namespace rec_be.Services
             {
                 int extraHours = now.Hour - limitHour + 1;
                 
-                // Crear el late check-out y obtener el cargo
+                // Create late check-out and get the charge
                 var lateCheckOut = await _lateCheckOutService.CreateLateCheckOut(new LateCheckOutRequestDTO
                 {
                     BookingId = booking.Id,
@@ -212,7 +206,7 @@ namespace rec_be.Services
                 lateCheckOutCharge = lateCheckOut.Charge;
             }
 
-            // Sumar el cargo del late checkout al total de la reserva
+            // Add the charge of the late checkout al total de la reserva
             booking.Total += lateCheckOutCharge;
 
             room.Occupied = false;
@@ -222,14 +216,13 @@ namespace rec_be.Services
             return MapToDTO(booking, room);
         }
 
-        // ── Cancelar reserva ──────────────────────────────────────────
         public async Task<BookingResponseDTO> Cancel(int bookingId)
         {
             var booking = await _bookingRepo.GetBooking(bookingId);
             var room    = await _roomRepo.GetRoomWithTypeById(booking.RoomId);
 
             IBookingState state = ResolveState(booking.Status);
-            state.Cancel(booking);                   // Status → "Cancelled"
+            state.Cancel(booking);
 
             if (room.Occupied)
             {
@@ -241,11 +234,11 @@ namespace rec_be.Services
             return MapToDTO(booking, room);
         }
 
-        // ── HU-05: Validación de capacidad (llamado desde Controller) ─
+        // HU-05
         public bool ValidateGuestAmount(int amount, IRoomStrategy room)
             => room.ValidateGuestCount(amount);
 
-        // ── Validación de fechas ──────────────────────────────────────
+        // date validation
         public bool ValidateDate(DateOnly startDate, DateOnly endDate)
             => endDate > startDate;
 

@@ -18,7 +18,7 @@ namespace rec_be.RoomStrategy
             "Suite de lujo con vista panorámica, jacuzzi y sala de estar";
         
         public override decimal CalculateLateCheckoutFee(int extraHours) =>
-            extraHours * (_lateCheckoutRate * 1.5m); // 50% más
+            extraHours * (_lateCheckoutRate * 1.5m);
         
         public override bool ValidateGuestCount(int guestCount) =>
             guestCount >= 1 && guestCount <= GetMaxCapacity();
