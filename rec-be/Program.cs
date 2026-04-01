@@ -11,7 +11,26 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers(); 
+// ── Configurar CORS ANTES de cualquier cosa ──────────────────────
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular", policy =>
+    {
+        policy.WithOrigins(
+                "http://localhost:4200",
+                "http://localhost:4201",
+                "https://localhost:4200"
+            )
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
+    });
 
 builder.Services.AddOpenApi();
 
@@ -27,7 +46,7 @@ builder.Services.AddScoped<IGuestRepository,        PostgreSQLGuestRepository>()
 builder.Services.AddScoped<IConfigRepository,       PostgreSQLConfigRepository>();
 builder.Services.AddScoped<ILateCheckOutRepository, PostgreSQLLateCheckOutRepository>();
 
-// ── Factory (no runtime deps → safe to DI-register) ───────────────
+// ── Factory ───────────────────────────────────────────────────────
 builder.Services.AddScoped<IRoomStrategyFactory, RoomStrategyFactory>();
 
 // ── Services ───────────────────────────────────────────────────────
@@ -38,6 +57,9 @@ builder.Services.AddScoped<ILateCheckOutService, LateCheckOutService>();
 
 var app = builder.Build();
 
+// ── Usar CORS ANTES de los otros middlewares ─────────────────────
+app.UseCors("AllowAngular");
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -47,6 +69,8 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseHttpsRedirection();
+// ── Comentar temporalmente para desarrollo ──────────────────────
+// app.UseHttpsRedirection();
+
 app.MapControllers();
 app.Run();

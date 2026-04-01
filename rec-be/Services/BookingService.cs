@@ -108,7 +108,8 @@ namespace rec_be.Services
                     Status = "pending",
                     CheckInDate = default,
                     CheckOutDate = default,
-                    Total = total
+                    Total = total,
+                    CreationDate = DateTime.Now
                 };
 
                 // Log before saving
@@ -252,6 +253,12 @@ namespace rec_be.Services
             
             await _bookingRepo.ChangeBookingStatus(booking);
             return booking.Total;
+        }
+
+        public async Task ApplyDiscount(IRoomStrategy roomStrategy, int BookingId)
+        {
+            decimal total = roomStrategy.ApplyDiscountOnFridays(booking.CreationDate, booking.Total);
+            roomStrategy.GetRoom();
         }
     }
 }

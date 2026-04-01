@@ -15,6 +15,7 @@ namespace rec_be.Models
         public DateTime CheckInDate { get; set; }
         public DateTime CheckOutDate { get; set; }
         public decimal Total { get; set; }
+        public DateTime CreationDate { get; set; }
 
         // Navegación
         public Room Room { get; set; } = null!;

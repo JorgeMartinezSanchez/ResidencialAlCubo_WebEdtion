@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { catchError, Observable } from 'rxjs';
 import { environment } from './../../../enviroment/enviroment';
 
 export interface Room {
@@ -21,7 +21,19 @@ export class RoomService {
   constructor(private http: HttpClient) {}
 
   getAllRooms(): Observable<Room[]> {
-    return this.http.get<Room[]>(`${this.apiUrl}/Room/All`);
+    console.log('Fetching rooms from:', `${this.apiUrl}/Room/All`);
+    return this.http.get<Room[]>(`${this.apiUrl}/Room/All`).pipe(
+      catchError(error => {
+        console.error('Error fetching rooms:', error);
+        console.error('Error details:', {
+          status: error.status,
+          statusText: error.statusText,
+          message: error.message,
+          url: error.url
+        });
+        throw error;
+      })
+    );
   }
 
   getRoomByNumber(roomNumber: string): Observable<Room> {

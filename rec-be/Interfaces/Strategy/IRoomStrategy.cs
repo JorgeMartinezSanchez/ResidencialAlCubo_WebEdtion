@@ -23,6 +23,8 @@ namespace rec_be.Interfaces.Strategy
         string GetDescription();
         decimal CalculateLateCheckoutFee(int extraHours);
         bool ValidateGuestCount(int guestCount);
+
+        decimal ApplyDiscountOnFridays(DateTime date, decimal bookingTotal);
         
         // Método para obtener el Room original si se necesita
         Room GetRoom();

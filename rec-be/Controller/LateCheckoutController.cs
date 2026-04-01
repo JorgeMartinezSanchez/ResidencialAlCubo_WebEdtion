@@ -12,7 +12,7 @@ namespace rec_be.Controller
     [Route("[controller]")]
     public class LateCheckoutController : ControllerBase
     {
-       private readonly ILateCheckOutService lateCheckOutService;
+        private readonly ILateCheckOutService lateCheckOutService;
 
         public LateCheckoutController(ILateCheckOutService _lateCheckOutService)
         {

@@ -29,5 +29,8 @@ namespace rec_be.RoomStrategy
         public abstract string GetDescription();
         public abstract decimal CalculateLateCheckoutFee(int extraHours);
         public abstract bool ValidateGuestCount(int guestCount);
+
+        // Discount
+        public abstract decimal ApplyDiscountOnFridays(DateTime date, decimal bookingTotal); 
     }
 }

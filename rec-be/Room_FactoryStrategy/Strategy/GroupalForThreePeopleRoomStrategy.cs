@@ -21,5 +21,15 @@ namespace rec_be.RoomStrategy
         
         public override bool ValidateGuestCount(int guestCount) =>
             guestCount >= 1 && guestCount <= GetMaxCapacity();
+        public override decimal ApplyDiscountOnFridays(DateTime date, decimal bookingTotal)
+        {
+            if(date.DayOfWeek == DayOfWeek.Friday)
+            {
+                return (80 * bookingTotal) / 100;
+            } else
+            {
+                return 0.0m;
+            }
+        }
     }
 }
