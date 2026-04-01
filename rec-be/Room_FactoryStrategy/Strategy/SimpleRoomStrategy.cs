@@ -14,7 +14,7 @@ namespace rec_be.RoomStrategy
             : base(room, lateCheckoutRate) { }
         
         public override string GetDescription() => 
-            "Habitación económica, ideal para viajeros solitarios";
+            "Cheapest Room, good for travelers.";
         
         public override decimal CalculateLateCheckoutFee(int extraHours) =>
             extraHours * (_lateCheckoutRate * 0.8m);

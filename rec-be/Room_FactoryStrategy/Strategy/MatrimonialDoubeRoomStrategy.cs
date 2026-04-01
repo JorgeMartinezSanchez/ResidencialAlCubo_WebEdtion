@@ -13,7 +13,7 @@ namespace rec_be.RoomStrategy
             : base(room, lateCheckoutRate) { }
         
         public override string GetDescription() => 
-            "Habitación con cama matrimonial, ideal para parejas";
+            "Matrimonial Room, good for the lovers!.";
         
         public override decimal CalculateLateCheckoutFee(int extraHours) =>
             extraHours * _lateCheckoutRate;

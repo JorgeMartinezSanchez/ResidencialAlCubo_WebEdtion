@@ -14,7 +14,7 @@ namespace rec_be.Room_FactoryStrategy.Factory
         public IRoomStrategy CreateStrategy(Room room, decimal lateCheckoutRate)
         {
             if (room?.RoomType == null)
-                throw new ArgumentException("La habitación no tiene un tipo válido");
+                throw new ArgumentException("Room doesnt have a valid type.");
             
             return room.RoomType.TypeName switch
             {
@@ -25,7 +25,7 @@ namespace rec_be.Room_FactoryStrategy.Factory
                 "Groupal for 3 people" => new GroupalForThreePeopleRoomStrategy(room, lateCheckoutRate),
                 "Groupal for 4 people" => new GroupalForFourPeopleRoomStrategy(room, lateCheckoutRate),
                 _ => throw new ArgumentException(
-                    $"Tipo de habitación no soportado: {room.RoomType.TypeName}")
+                    $"Room type not supported: {room.RoomType.TypeName}")
             };
         }
     }

@@ -15,7 +15,7 @@ namespace rec_be.RoomStrategy
             : base(room, lateCheckoutRate) { }
         
         public override string GetDescription() => 
-            "Suite de lujo con vista panorámica, jacuzzi y sala de estar";
+            "Luxurious Suite room with jacuzzi.";
         
         public override decimal CalculateLateCheckoutFee(int extraHours) =>
             extraHours * (_lateCheckoutRate * 1.5m);

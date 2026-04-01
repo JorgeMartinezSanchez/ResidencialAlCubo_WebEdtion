@@ -14,7 +14,7 @@ namespace rec_be.RoomStrategy
             : base(room, lateCheckoutRate) { }
         
         public override string GetDescription() => 
-            "Habitación con dos camas individuales, ideal para amigos o familia";
+            "Room with 2 individual beds, ideal for family or friends.";
         
         public override decimal CalculateLateCheckoutFee(int extraHours) =>
             extraHours * _lateCheckoutRate;

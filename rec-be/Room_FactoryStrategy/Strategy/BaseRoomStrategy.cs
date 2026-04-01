@@ -21,7 +21,7 @@ namespace rec_be.RoomStrategy
         public string GetRoomNumber() => _room.RoomNumber;
         public bool IsOccupied() => _room.Occupied;
         public int GetRoomId() => _room.Id;
-        public string GetRoomTypeName() => _room.RoomType?.TypeName ?? "Desconocido";
+        public string GetRoomTypeName() => _room.RoomType?.TypeName ?? "desconocido";
         public decimal GetBasePrice() => _room.RoomType?.Price ?? 0;
         public int GetMaxCapacity() => _room.RoomType?.Capacity ?? 1;
         public Room GetRoom() => _room;

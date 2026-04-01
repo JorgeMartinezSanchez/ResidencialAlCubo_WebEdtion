@@ -2,10 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { RoomService, Room } from './../services/room/room.service';
 import { BookingService } from './../services/booking/booking.service';
+import { NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
+  imports: [NgFor],
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
