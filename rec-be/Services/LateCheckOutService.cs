@@ -31,18 +31,14 @@ namespace rec_be.Services
         }
 
         // ── HU-08: Crear registro de Late Check-Out ───────────────────
-        // El cargo varía según el tipo de habitación (Strategy pattern).
         public async Task<LateCheckOutResponseDTO> CreateLateCheckOut(LateCheckOutRequestDTO newLateCheckOut)
         {
-            // Necesitamos la habitación para seleccionar la estrategia correcta
             var booking = await _bookingRepo.GetBooking(newLateCheckOut.BookingId);
             var room    = await _roomRepo.GetRoomWithTypeById(booking.RoomId);
 
-            // Leer la tarifa base desde configuración
             var rateKvp = await _configRepo.GetConfigByKey("LateCheckOutHourlyRate");
             decimal rate = decimal.Parse(rateKvp.Value);
 
-            // Strategy pattern: cada tipo de habitación aplica su propio multiplicador
             IRoomStrategy strategy = _strategyFactory.CreateStrategy(room, rate);
             decimal charge = strategy.CalculateLateCheckoutFee(newLateCheckOut.ExtraHours);
 
@@ -63,19 +59,19 @@ namespace rec_be.Services
             };
         }
 
-        // ── Calcular el cargo total acumulado de un booking ───────────
-        public async Task<decimal> CalculateTotalCharge(int BookingId)
+        public async Task<decimal> CalculateTotalCharge(int bookingId)
         {
-            var rawBooking   = await _bookingRepo.GetBooking(BookingId);
-            var lcosInOneRoom = await _lateCheckOutRepo.GetLateCheckOutsFromBookingId(rawBooking.Id);
+            var booking = await _bookingRepo.GetBooking(bookingId);
+            var lcos = await _lateCheckOutRepo.GetLateCheckOutsFromBookingId(booking.Id);
 
-            if (lcosInOneRoom == null || lcosInOneRoom.Count == 0)
+            if (lcos == null || lcos.Count == 0)
                 return 0.0m;
-            rawBooking.Total = lcosInOneRoom.Sum(lco => lco.Charge);
-            await _bookingRepo.ChangeBookingStatus(rawBooking);
-            // Los cargos ya fueron calculados con Strategy al momento de crearlos,
-            // así que simplemente los sumamos.
-            return lcosInOneRoom.Sum(lco => lco.Charge);
+
+            var total = lcos.Sum(lco => lco.Charge);
+            booking.Total = total;
+
+            await _bookingRepo.ChangeBookingStatus(booking);
+            return total;
         }
 
         // En LateCheckOutService.cs
