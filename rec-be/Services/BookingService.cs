@@ -135,10 +135,6 @@ namespace rec_be.Services
             {
                 throw new Exception($"Database error: {ex.InnerException?.Message ?? ex.Message}");
             }
-            catch (Exception ex)
-            {
-                throw;
-            }
         }
 
         // HU-03
