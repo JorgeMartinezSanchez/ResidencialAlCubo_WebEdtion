@@ -11,26 +11,24 @@ namespace rec_be.RoomStrategy
     {
         protected readonly Room _room;
         protected readonly decimal _lateCheckoutRate;
-        
+
         protected BaseRoomStrategy(Room room, decimal lateCheckoutRate)
         {
             _room = room;
             _lateCheckoutRate = lateCheckoutRate;
         }
-        
+
         public string GetRoomNumber() => _room.RoomNumber;
         public bool IsOccupied() => _room.Occupied;
         public int GetRoomId() => _room.Id;
-        public string GetRoomTypeName() => _room.RoomType?.TypeName ?? "desconocido";
+        public string GetRoomTypeName() => _room.RoomType?.TypeName ?? "unknown";
         public decimal GetBasePrice() => _room.RoomType?.Price ?? 0;
         public int GetMaxCapacity() => _room.RoomType?.Capacity ?? 1;
         public Room GetRoom() => _room;
-        
-        public abstract string GetDescription();
-        public abstract decimal CalculateLateCheckoutFee(int extraHours);
-        public abstract bool ValidateGuestCount(int guestCount);
 
-        // Discount
-        public abstract decimal ApplyDiscountOnFridays(DateTime date, decimal bookingTotal); 
+        public abstract string  GetDescription();
+        public abstract decimal CalculateLateCheckoutFee(int extraHours);
+        public abstract bool    ValidateGuestCount(int guestCount);
+        public virtual decimal ApplyDiscountOnFridays(DateTime date, decimal bookingTotal) => 0.0m;
     }
 }
