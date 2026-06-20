@@ -106,10 +106,10 @@ namespace rec_be.Services
                     StartDate = bookingRequest.StartDate,
                     EndDate = bookingRequest.EndDate,
                     Status = "pending",
-                    CheckInDate = default,
-                    CheckOutDate = default,
+                    CheckInDate = DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc),
+                    CheckOutDate = DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc),
                     Total = total,
-                    CreationDate = DateTime.Now
+                    CreationDate = DateTime.UtcNow
                 };
 
                 // Log before saving
@@ -134,6 +134,10 @@ namespace rec_be.Services
             catch (DbUpdateException ex)
             {
                 throw new Exception($"Database error: {ex.InnerException?.Message ?? ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
 
@@ -187,7 +191,7 @@ namespace rec_be.Services
             // Verify if late checkout applies to this
             var limitKvp = await _configRepo.GetConfigByKey("checkout_limit_hour");
             int limitHour = int.Parse(limitKvp.Value);
-            var now = DateTime.Now;
+            var now = DateTime.UtcNow;
 
             if (now.Hour >= limitHour)
             {

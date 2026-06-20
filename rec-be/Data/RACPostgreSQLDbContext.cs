@@ -33,5 +33,26 @@ namespace rec_be.Data
             modelBuilder.Entity<Config>()
                 .HasKey(c => c.ConfigKey);
         }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            foreach (var entry in ChangeTracker.Entries())
+            {
+                foreach (var prop in entry.Properties)
+                {
+                    if (prop.Metadata.ClrType == typeof(DateTime) && prop.CurrentValue is DateTime dt)
+                    {
+                        Console.WriteLine($"[DEBUG] Entity={entry.Entity.GetType().Name} Prop={prop.Metadata.Name} Kind={dt.Kind} Value={dt}");
+                        if (dt.Kind != DateTimeKind.Utc)
+                        {
+                            prop.CurrentValue = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+                            Console.WriteLine($"[DEBUG] -> Normalizado a UTC");
+                        }
+                    }
+                }
+            }
+
+            return await base.SaveChangesAsync(cancellationToken);
+        }
     }
 }

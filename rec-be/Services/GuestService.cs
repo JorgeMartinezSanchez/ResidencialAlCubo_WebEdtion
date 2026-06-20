@@ -55,6 +55,19 @@ namespace rec_be.Services
             return guests.Select(MapToDTO).ToList();
         }
 
+        public async Task<List<GuestResponseDTO>> GetAllTheGuests()
+        {
+            var result = await _guestRepository.GetAllGuests();
+            List<GuestResponseDTO> resultDtos = new List<GuestResponseDTO>();
+
+            foreach(var guest in result)
+            {
+                resultDtos.Add(MapToDTO(guest));
+            }
+
+            return resultDtos;
+        }
+
         private static Guest MapToModel(GuestRequestDTO g) => new Guest
         {
             FirstName = g.FirstName,

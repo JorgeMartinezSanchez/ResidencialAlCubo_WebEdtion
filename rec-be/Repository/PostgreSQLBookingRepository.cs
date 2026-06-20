@@ -71,6 +71,10 @@ namespace rec_be.Repository
         }
         public async Task<Booking> ChangeBookingStatus(Booking NewBookingState)
         {
+            NewBookingState.CheckInDate  = DateTime.SpecifyKind(NewBookingState.CheckInDate, DateTimeKind.Utc);
+            NewBookingState.CheckOutDate = DateTime.SpecifyKind(NewBookingState.CheckOutDate, DateTimeKind.Utc);
+            NewBookingState.CreationDate = DateTime.SpecifyKind(NewBookingState.CreationDate, DateTimeKind.Utc);
+
             dbContext.Bookings.Update(NewBookingState);
             await dbContext.SaveChangesAsync();
             return NewBookingState;

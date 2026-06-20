@@ -19,7 +19,8 @@ builder.Services.AddCors(options =>
         policy.WithOrigins(
                 "http://localhost:4200",
                 "http://localhost:4201",
-                "https://localhost:4200"
+                "https://localhost:4200",
+                "http://localhost:5173"
             )
             .AllowAnyMethod()
             .AllowAnyHeader();
@@ -57,7 +58,6 @@ builder.Services.AddScoped<ILateCheckOutService, LateCheckOutService>();
 
 var app = builder.Build();
 
-// ── Usar CORS ANTES de los otros middlewares ─────────────────────
 app.UseCors("AllowAngular");
 
 if (app.Environment.IsDevelopment())

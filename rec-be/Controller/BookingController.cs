@@ -63,8 +63,15 @@ namespace rec_be.Controller
         [HttpPut("cancel/{BookingId}")]
         public async Task<IActionResult> Cancel(int BookingId)
         {
-            var booking = await bookingService.Cancel(BookingId);
-            return Ok(booking);
+            try
+            {
+                var booking = await bookingService.Cancel(BookingId);
+                return Ok(booking);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

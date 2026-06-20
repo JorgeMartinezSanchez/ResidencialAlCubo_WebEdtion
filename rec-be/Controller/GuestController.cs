@@ -35,5 +35,12 @@ namespace rec_be.Controller
             var allGuests = await guestService.GetGuestsFromBookingId(BookingId);
             return Ok(allGuests);
         }
+
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllGuests()
+        {
+            var allGuests = await guestService.GetAllTheGuests();
+            return Ok(allGuests);
+        }
     }
 }
