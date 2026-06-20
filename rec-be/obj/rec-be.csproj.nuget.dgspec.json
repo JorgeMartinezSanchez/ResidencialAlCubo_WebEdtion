@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\JORGE MARTINEZ S\\Desktop\\UCB\\2026-1\\Taller de Diseño de Software\\Examen parcial 1\\ResidencialAlCubo_WebEdtion\\rec-be\\rec-be.csproj": {}
+    "C:\\Users\\JORGE MARTINEZ S\\Desktop\\UCB\\2026-1\\Taller de Diseño de Software\\Primer Bloque\\Examen parcial 1\\ResidencialAlCubo_WebEdtion\\rec-be\\rec-be.csproj": {}
   },
   "projects": {
-    "C:\\Users\\JORGE MARTINEZ S\\Desktop\\UCB\\2026-1\\Taller de Diseño de Software\\Examen parcial 1\\ResidencialAlCubo_WebEdtion\\rec-be\\rec-be.csproj": {
+    "C:\\Users\\JORGE MARTINEZ S\\Desktop\\UCB\\2026-1\\Taller de Diseño de Software\\Primer Bloque\\Examen parcial 1\\ResidencialAlCubo_WebEdtion\\rec-be\\rec-be.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\JORGE MARTINEZ S\\Desktop\\UCB\\2026-1\\Taller de Diseño de Software\\Examen parcial 1\\ResidencialAlCubo_WebEdtion\\rec-be\\rec-be.csproj",
+        "projectUniqueName": "C:\\Users\\JORGE MARTINEZ S\\Desktop\\UCB\\2026-1\\Taller de Diseño de Software\\Primer Bloque\\Examen parcial 1\\ResidencialAlCubo_WebEdtion\\rec-be\\rec-be.csproj",
         "projectName": "rec-be",
-        "projectPath": "C:\\Users\\JORGE MARTINEZ S\\Desktop\\UCB\\2026-1\\Taller de Diseño de Software\\Examen parcial 1\\ResidencialAlCubo_WebEdtion\\rec-be\\rec-be.csproj",
+        "projectPath": "C:\\Users\\JORGE MARTINEZ S\\Desktop\\UCB\\2026-1\\Taller de Diseño de Software\\Primer Bloque\\Examen parcial 1\\ResidencialAlCubo_WebEdtion\\rec-be\\rec-be.csproj",
         "packagesPath": "C:\\Users\\JORGE MARTINEZ S\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\JORGE MARTINEZ S\\Desktop\\UCB\\2026-1\\Taller de Diseño de Software\\Examen parcial 1\\ResidencialAlCubo_WebEdtion\\rec-be\\obj\\",
+        "outputPath": "C:\\Users\\JORGE MARTINEZ S\\Desktop\\UCB\\2026-1\\Taller de Diseño de Software\\Primer Bloque\\Examen parcial 1\\ResidencialAlCubo_WebEdtion\\rec-be\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -45,7 +45,7 @@
           "auditLevel": "low",
           "auditMode": "all"
         },
-        "SdkAnalysisLevel": "10.0.100"
+        "SdkAnalysisLevel": "10.0.200"
       },
       "frameworks": {
         "net10.0": {
@@ -63,7 +63,7 @@
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[10.0.5, )"
+              "version": "[10.0.4, )"
             },
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
@@ -93,7 +93,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.104/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.AspNetCore": "(,10.0.32767]",
             "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",

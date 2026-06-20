@@ -59,6 +59,10 @@ CREATE TABLE booking(
     FOREIGN KEY (room_id) REFERENCES room(id)
 );
 
+ALTER TABLE booking ADD CreationDate TIMESTAMP
+
+SELECT * FROM booking
+
 CREATE TABLE room_guest(
     booking_id INTEGER,
     guest_id INTEGER,
@@ -80,8 +84,29 @@ CREATE TABLE config(
     config_value VARCHAR(255)
 );
 
--- TESTING DATA
+-- ============================================
+-- COMPLETE DATA SCRIPT WITH SEQUENCE RESET
+-- ============================================
 
+-- Step 1: Disable triggers temporarily (for clean truncate)
+SET session_replication_role = 'replica';
+
+-- Step 2: Truncate all tables in correct order with RESTART IDENTITY
+TRUNCATE TABLE late_check_out RESTART IDENTITY CASCADE;
+TRUNCATE TABLE room_guest RESTART IDENTITY CASCADE;
+TRUNCATE TABLE booking RESTART IDENTITY CASCADE;
+TRUNCATE TABLE room RESTART IDENTITY CASCADE;
+TRUNCATE TABLE room_type RESTART IDENTITY CASCADE;
+TRUNCATE TABLE guest RESTART IDENTITY CASCADE;
+TRUNCATE TABLE service_contact RESTART IDENTITY CASCADE;
+TRUNCATE TABLE config RESTART IDENTITY CASCADE;
+
+-- Step 3: Re-enable triggers
+SET session_replication_role = 'origin';
+
+-- ============================================
+-- 1. INSERT ROOM TYPES
+-- ============================================
 INSERT INTO room_type (type_name, price, capacity) VALUES
     ('Simple', 120.00, 1),
     ('Suite', 170.00, 1),
@@ -91,33 +116,43 @@ INSERT INTO room_type (type_name, price, capacity) VALUES
     ('Groupal for 3 people', 210.00, 3);
 
 -- ============================================
--- INSERT ROOMS
+-- 2. INSERT ROOMS
 -- ============================================
 INSERT INTO room (room_type_id, room_number, occupied) VALUES
-    -- Piso 1: Simples
+    -- Piso 1: Simples (room_type_id = 1)
     (1, '101', false),
     (1, '102', false),
     (1, '103', false),
     (1, '104', false),
 
-    -- Piso 2: Dobles
+    -- Piso 2: Dobles (room_type_id = 3 and 4)
     (3, '201', false),
     (3, '202', false),
     (4, '203', false),
     (4, '204', false),
 
-    -- Piso 3: Grupales
+    -- Piso 3: Grupales (room_type_id = 5 and 6)
     (5, '301', false),
     (5, '302', false),
     (6, '303', false),
     (6, '304', false),
 
-    -- Piso 4: Suites
+    -- Piso 4: Suites (room_type_id = 2)
     (2, '401', false),
     (2, '402', false);
 
 -- ============================================
--- INSERT GUESTS
+-- 3. VERIFY room_type exists
+-- ============================================
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM room_type WHERE id = 1) THEN
+        RAISE EXCEPTION 'Room type with id 1 does not exist!';
+    END IF;
+END $$;
+
+-- ============================================
+-- 4. INSERT GUESTS
 -- ============================================
 INSERT INTO guest (first_name, second_name, last_name, id_card, phone_number, email) VALUES
     ('Israel', '', 'Gutierrez', '53263563', '76342345', 'israel.gutierrez.s@gmail.com'),
@@ -130,7 +165,7 @@ INSERT INTO guest (first_name, second_name, last_name, id_card, phone_number, em
     ('Mijael', 'Ander', 'Callejas', '68406492', '38797443', 'mijael.callejas@gmail.com');
 
 -- ============================================
--- INSERT SERVICE CONTACTS
+-- 5. INSERT SERVICE CONTACTS
 -- ============================================
 INSERT INTO service_contact (first_name, second_name, last_name, job_role, id_card, phone_number, email, available) VALUES
     ('Ana', 'Maria', 'Lopez', 'Housekeeping', '9876543', '71234567', 'ana.lopez@hotel.com', true),
@@ -139,22 +174,19 @@ INSERT INTO service_contact (first_name, second_name, last_name, job_role, id_ca
     ('Miguel', 'Angel', 'Salinas', 'Security', '6543210', '74567890', 'miguel.salinas@hotel.com', true);
 
 -- ============================================
--- INSERT BOOKINGS WITH CHECK_OUT_DATE
+-- 6. INSERT BOOKINGS (with correct room IDs)
 -- ============================================
--- Note: check_out_date is set when guest actually checks out
--- For active/pending bookings, it's NULL
--- For finished bookings, it's the actual checkout datetime
 INSERT INTO booking (room_id, start_date, end_date, status, check_in_date, check_out_date, total) VALUES
     -- Finished bookings (completed stays)
     (1, '2026-03-25', '2026-03-28', 'finished', '2026-03-25 14:30:00', '2026-03-28 11:00:00', 360.00),
     (2, '2026-03-10', '2026-03-15', 'finished', '2026-03-10 15:00:00', '2026-03-15 10:30:00', 600.00),
     
-    -- Active bookings (checked in, not checked out yet - check_out_date uses sentinel)
+    -- Active bookings (checked in, not checked out yet)
     (3, '2026-03-28', '2026-04-02', 'active', '2026-03-28 14:30:00', '1900-01-01 00:00:00', 480.00),
     (5, '2026-03-29', '2026-04-03', 'active', '2026-03-29 15:15:00', '1900-01-01 00:00:00', 800.00),
     (6, '2026-03-30', '2026-04-05', 'active', '2026-03-30 14:00:00', '1900-01-01 00:00:00', 960.00),
     
-    -- Pending bookings (future, not checked in - both dates use sentinel)
+    -- Pending bookings (future, not checked in)
     (13, '2026-04-01', '2026-04-05', 'pending', '1900-01-01 00:00:00', '1900-01-01 00:00:00', 680.00),
     (9, '2026-04-10', '2026-04-13', 'pending', '1900-01-01 00:00:00', '1900-01-01 00:00:00', 720.00),
     (11, '2026-04-15', '2026-04-20', 'pending', '1900-01-01 00:00:00', '1900-01-01 00:00:00', 1000.00),
@@ -164,41 +196,20 @@ INSERT INTO booking (room_id, start_date, end_date, status, check_in_date, check
     (4, '2026-03-20', '2026-03-25', 'cancelled', '1900-01-01 00:00:00', '1900-01-01 00:00:00', 0.00);
 
 -- ============================================
--- INSERT ROOM GUESTS
+-- 7. INSERT ROOM GUESTS
 -- ============================================
 INSERT INTO room_guest (booking_id, guest_id) VALUES
-    -- Finished bookings
-    (1, 3),   -- Carlos en reserva 1
-    (2, 4),   -- Sofia en reserva 2
-    
-    -- Active bookings
-    (3, 5),   -- Diego en reserva 3
-    (4, 6),   -- Maria en reserva 4
-    (4, 1),   -- Israel también en reserva 4
-    (5, 7),   -- Jorge en reserva 5
-    (5, 2),   -- Diego Heredia también en reserva 5
-    (6, 8),   -- Mijael en reserva 6
-    
-    -- Pending bookings
-    (7, 3),   -- Carlos en reserva 7
-    (8, 4),   -- Sofia en reserva 8
-    (8, 5),   -- Diego también en reserva 8
-    (9, 6),   -- Maria en reserva 9
-    (9, 1),   -- Israel también en reserva 9
-    (9, 7),   -- Jorge también en reserva 9
-    (10, 8),  -- Mijael en reserva 10
-    (10, 2);  -- Diego Heredia también en reserva 10
+    (1, 3), (2, 4), (3, 5), (4, 6), (4, 1), (5, 7), (5, 2), (6, 8),
+    (7, 3), (8, 4), (8, 5), (9, 6), (9, 1), (9, 7), (10, 8), (10, 2);
 
 -- ============================================
--- INSERT LATE CHECK OUT
+-- 8. INSERT LATE CHECK OUT
 -- ============================================
 INSERT INTO late_check_out (booking_id, extra_hours, charge) VALUES
-    (1, 2, 120.00),  -- Finished booking with late check-out
-    (3, 3, 180.00),  -- Active booking that had late check-out
-    (4, 1, 60.00);   -- Active booking with late check-out
+    (1, 2, 120.00), (3, 3, 180.00), (4, 1, 60.00);
 
 -- ============================================
--- INSERT CONFIGURATION
+-- 9. INSERT CONFIGURATION
 -- ============================================
 INSERT INTO config (config_key, config_value) VALUES 
     ('LateCheckOutHourlyRate', '50.0'),
@@ -208,12 +219,25 @@ INSERT INTO config (config_key, config_value) VALUES
     ('cancellation_fee_percentage', '50'),
     ('booking_advance_days', '30');
 
-
+-- ============================================
+-- 10. UPDATE ROOM OCCUPANCY
+-- ============================================
+UPDATE room SET occupied = true 
+WHERE id IN (SELECT room_id FROM booking WHERE status = 'active');
 
 SELECT config_value FROM Config WHERE config_key = 'LateCheckOutHourlyRate';
 
 SELECT * FROM booking
-SELECT * FROM Room_Guest
+
+ALTER TABLE booking 
+ALTER COLUMN check_in_date TYPE TIMESTAMPTZ,
+ALTER COLUMN check_out_date TYPE TIMESTAMPTZ;
+
+SELECT * FROM Room_guest
+SELECT * FROM Guest
+SELECT * FROM booking
+select * from room_type
+select * from late_check_out
 
 SELECT id, room_number, room_type_id FROM room;
 

@@ -255,10 +255,10 @@ namespace rec_be.Services
             return booking.Total;
         }
 
-        public async Task ApplyDiscount(IRoomStrategy roomStrategy, int BookingId)
+        /*public async Task ApplyDiscount(IRoomStrategy roomStrategy, int BookingId)
         {
             decimal total = roomStrategy.ApplyDiscountOnFridays(booking.CreationDate, booking.Total);
             roomStrategy.GetRoom();
-        }
+        }*/
     }
 }
